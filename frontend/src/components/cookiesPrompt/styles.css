@@ -1,0 +1,16 @@
+.cookies_propmpt {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+}
+.cookies_propmpt button {
+  padding: 7px;
+  border-radius: 15px;
+  border: none;
+}
+.cookies_propmpt button:focus,
+.cookies_propmpt button:active {
+  outline: none;
+}

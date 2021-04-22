@@ -1,5 +1,5 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
 require("dotenv").config();
 const app = express();
 
@@ -11,28 +11,24 @@ mongoose.connect(config.mongoURI, {
 });
 
 require("./models/User");
-require("./models/Demand");
-require("./models/CourseCoupons");
 
-app.use(bodyParser.json());
-
-require("./routes/dialogFlowRoutes")(app);
-require("./routes/fulfillmentRoutes")(app);
-require("./routes/userRoutes")(app);
+//app.use(bodyParser.json());
+app.use(express.json());
+require("./routes/authRoutes")(app);
 
 const cors = require("cors");
 
 //if (process.env.NODE_ENV === "production") {
 //js and css files
-app.use(express.static("client/build"));
+app.use(express.static("frontend/build"));
 const path = require("path");
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "client/build")));
+app.use(express.static(path.join(__dirname, "frontend/build")));
 app.use(cors());
 
 // index.html for all page routes
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
 });
 //}
 
