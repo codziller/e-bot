@@ -14,7 +14,6 @@ const cookies = new Cookies();
 class Chatbot extends Component {
   messagesEnd;
   talkInput;
-
   constructor(props) {
     super(props);
     this.state = {
