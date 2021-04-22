@@ -26,12 +26,15 @@ module.exports = {
       let email = request.body.email;
       let oldEmail = await userCopy.find({ email: email });
       if (oldEmail[0]) {
-        response.send(oldEmail[0]);
+        response.send({
+          name: oldEmail[0].name,
+          email: oldEmail[0].email,
+          existing: true,
+        });
       } else {
         const newUser = new userCopy({
           name: request.body.name,
           email: email,
-          user_id: request.body.user_id,
         });
         let res = await newUser.save();
 

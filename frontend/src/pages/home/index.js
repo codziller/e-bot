@@ -9,7 +9,7 @@ const App = () => {
   const [displayCookiesPropmt, setDisplayCookiesPropmt] = useState(false);
 
   useEffect(() => {
-    if (!cookies.get("users_name")) {
+    if (!cookies.get("user_name")) {
       setDisplayCookiesPropmt(true);
     }
   }, []);

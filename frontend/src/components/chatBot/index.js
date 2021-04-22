@@ -7,7 +7,6 @@ import Message from "../message";
 import Card from "../chatCard";
 import QuickReplies from "../quickReplies";
 import { faqs, quizQuestions } from "../../helpers/data";
-import Modal from "../modal";
 import Timetable from "../timetable";
 const cookies = new Cookies();
 
@@ -67,22 +66,19 @@ class Chatbot extends Component {
     await this.callClient(request);
   };
 
-
-  //   Function to welcome registered users
-  welcomeUser = () => {
+  //   Function to push message to chatbot
+  pushMessage = (text) => {
     let says = {
       speaks: "bot",
       msg: {
         text: {
-          text: `Welcome back ${cookies.get(
-            "user_name"
-          )}! Hit the "Teaching assistant button to continue your course"`,
+          text: text,
         },
       },
     };
     this.setState({ messages: [...this.state.messages, says] });
   };
-  
+
   // Function to welcome users to the course
   welcomePracticeUser = () => {
     let says = {
@@ -151,16 +147,25 @@ class Chatbot extends Component {
     const payload = {
       name: this.state.name,
       email: this.state.email,
-      user_id: cookies.get("users_id"),
     };
 
     try {
-      await axios.post(
-        "https://edubot-dialogflowapp.herokuapp.com/app/save-user",
+      let res = await axios.post(
+        "https://university-bot-app.herokuapp.com/auth/register",
         payload
       );
-      cookies.set("user_name", this.state.name);
-      cookies.set("user_email", this.state.email);
+
+      if (res && res.data) {
+        cookies.set("user_name", res.data.name);
+        cookies.set("user_email", res.data.email);
+
+        if (res.data.existing) {
+          this.pushMessage(
+            `Looks like you're already enroled with this email, ${res.data.name} `
+          );
+        }
+        console.log(res.data);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -184,7 +189,7 @@ class Chatbot extends Component {
     try {
       if (this.state.clientToken === false) {
         const res = await axios.get(
-          "https://edubot-dialogflowapp.herokuapp.com/api/get_client_token"
+          "https://university-bot-app.herokuapp.com/auth/get-token"
         );
         this.setState({ clientToken: res.data.token });
       }
@@ -280,20 +285,18 @@ class Chatbot extends Component {
     //   Send welcome query
     this.sendEventQuery("Welcome");
     // To check if user is logged in and get user details onmount
-    if (!cookies.get("user_name")) {
-      try {
-        let response = await axios.get(
-          `https://edubot-dialogflowapp.herokuapp.com/app/user/${cookies.get(
-            "users_id"
-          )}`
-        );
-        if (response && response.data && response.data.name) {
-          cookies.set("user_name", response.data.name);
-          cookies.set("user_email", response.data.email);
-        }
-      } catch (err) {
-        console.log(err);
+
+    try {
+      let response = await axios.post(
+        "https://university-bot-app.herokuapp.com/auth/login",
+        { email: cookies.get("user_email") || "" }
+      );
+      if (response && response.data && response.data.name) {
+        cookies.set("user_name", response.data.name);
+        cookies.set("user_email", response.data.email);
       }
+    } catch (err) {
+      console.log(err);
     }
 
     this.setState({
@@ -318,7 +321,7 @@ class Chatbot extends Component {
     if (displayResult) {
       setTimeout(() => {
         this.resetQuiz();
-      }, 3500);
+      }, 5);
     }
   }
   // To display chatbot
@@ -339,6 +342,11 @@ class Chatbot extends Component {
     this.setState({ score: correctAnswers.length });
     if (state.length === 5) {
       this.setState({ displayResult: true });
+      this.pushMessage(
+        `${this.state.score >= 3 ? "Good job" : "Hmm,"} ${
+          this.state.name
+        }, your scored ${this.state.score} out of ${quizQuestions.length}`
+      );
     }
   }
   //   To
@@ -423,13 +431,7 @@ class Chatbot extends Component {
               <div className="col s2">
                 <a
                   href="/"
-                  className="btn-floating btn-large waves-effect waves-light red"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    lineHeight: "40px",
-                    fontSize: "12px",
-                  }}
+                  className="chat_title app_back row j_center a_center"
                 >
                   {message.speaks}
                 </a>
@@ -478,13 +480,7 @@ class Chatbot extends Component {
                 <div className="col s2">
                   <a
                     href="/"
-                    className="btn-floating btn-large waves-effect waves-light red"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      lineHeight: "40px",
-                      fontSize: "12px",
-                    }}
+                    className="chat_title app_back row j_center a_center"
                   >
                     bot
                   </a>
@@ -580,6 +576,7 @@ class Chatbot extends Component {
       justifyContent: "space-between",
       padding: "7px 20px",
       borderBottom: "3px solid #f8f8f8",
+      borderTop: "3px solid #f8f8f8",
     };
     if (this.state.displayBot) {
       return (
@@ -660,13 +657,7 @@ class Chatbot extends Component {
                         <div className="col s2">
                           <a
                             href="/"
-                            className="btn-floating btn-large waves-effect waves-light red"
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              lineHeight: "40px",
-                              fontSize: "12px",
-                            }}
+                            className="chat_title app_back row j_center a_center"
                           >
                             bot
                           </a>
@@ -747,7 +738,11 @@ class Chatbot extends Component {
                 onClick={() => {
                   this.talkInput.focus();
                   if (cookies.get("user_name")) {
-                    this.welcomeUser();
+                    this.pushMessage(
+                      `Welcome back ${cookies.get(
+                        "user_name"
+                      )}! Hit the "Teaching assistant button to continue your course"`
+                    );
                   } else {
                     this.sendTextQuery("recommend", true);
                   }
@@ -805,14 +800,6 @@ class Chatbot extends Component {
                 Time table
               </button>
             </section>
-
-            <Modal
-              name={this.state.name}
-              score={this.state.score}
-              total={quizQuestions.length}
-              display={this.state.displayResult}
-              setDisplay={() => this.setState({ displayResult: false })}
-            />
 
             <Timetable
               display={this.state.displayTable}
