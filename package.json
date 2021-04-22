@@ -11,7 +11,8 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix frontend",
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\""
+    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend" 
    
   },
   "author": "rameezyatoo",
