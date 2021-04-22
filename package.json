@@ -11,8 +11,8 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix frontend",
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\"",
-    "heroku-postbuild": "cd frontend && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\""
+   
   },
   "author": "rameezyatoo",
   "license": "ISC",
