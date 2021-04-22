@@ -379,6 +379,7 @@ class Chatbot extends Component {
       });
     }
   };
+
   // Reset quiz parameters
   resetQuiz = () => {
     this.setState({
