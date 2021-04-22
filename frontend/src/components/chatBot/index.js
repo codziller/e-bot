@@ -67,6 +67,7 @@ class Chatbot extends Component {
     await this.callClient(request);
   };
 
+
   //   Function to welcome registered users
   welcomeUser = () => {
     let says = {
@@ -81,6 +82,7 @@ class Chatbot extends Component {
     };
     this.setState({ messages: [...this.state.messages, says] });
   };
+  
   // Function to welcome users to the course
   welcomePracticeUser = () => {
     let says = {
