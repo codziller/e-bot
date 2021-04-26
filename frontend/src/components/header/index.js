@@ -11,23 +11,9 @@ const Header = () => (
         to={"/"}
         className="white bold"
       >
-        IT Courses Bot
+        University Bot
       </Link>
     </div>
-    {
-      <div
-        className="pointer danger"
-        onClick={() => {
-          cookies.remove("users_id");
-          cookies.remove("user_name");
-          cookies.remove("user_email");
-          alert("Logged out successfully");
-          window.location.reload();
-        }}
-      >
-        Logout
-      </div>
-    }
   </nav>
 );
 

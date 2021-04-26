@@ -1,13 +1,13 @@
 export const faqs = [
-  "Do I need to own my own personal computer?",
-  "I am ready to look at the Computer Science curriculum, where do I go from here?",
-  "Is Computer Science the right choice of major for me?",
-  "Some people I know have a technology-related job without studying much Mathematics in their college major. However, I see that a degree in Computer Science involves a lot of mathematics. Why do you require it?",
-  "What are some career opportunities for Computer Science majors?",
-  "What courses will transfer into UALR’s Computer Science Department?",
-  "What is Computer Science?",
-  "What kind of a student succeeds as a Computer Science major?",
-  "Why should I study Computer Science?",
+  "Which software can we use for prototyping?",
+  "What type of car  and target audiences I am designing this for?",
+  "Can I use UML diagrams to describe my conceptual model and design idea.",
+  "Do I need to submit sketches of the prototype?",
+  "Is there anything in particular we need to research for in regards to in-car entertainment and navigation systems? Do we need to do a competitor analysis?",
+  "The coursework specification mentions that at least one assumption is to be tested, what do you mean by assumption?",
+  "What is the difference between a concept and a conceptual model?",
+  "How should I visualise my conceptual model?",
+  "What is the difference between 2.1. and 2.2 in the background section (annotated TOC), do I have to write about interaction design theory concepts in 2.2. again?",
 ];
 
 export const quizQuestions = [

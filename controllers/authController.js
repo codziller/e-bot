@@ -6,6 +6,7 @@ const userCopy = mongoose.model("user");
 const googleClientEmail = config.googleClientEmail;
 const googlePrivateKey = config.googlePrivateKey;
 module.exports = {
+  // Function to get token from google oauth
   getSessionToken: async function () {
     return new Promise((resolve) => {
       googleAuth.authenticate(
@@ -21,14 +22,14 @@ module.exports = {
     });
   },
 
+  // Register a user to the DB
   register: async (request, response) => {
     try {
       let email = request.body.email;
       let oldEmail = await userCopy.find({ email: email });
       if (oldEmail[0]) {
         response.send({
-          name: oldEmail[0].name,
-          email: oldEmail[0].email,
+          ...oldEmail[0]._doc,
           existing: true,
         });
       } else {
@@ -45,6 +46,8 @@ module.exports = {
     }
   },
 
+  // Login
+
   login: async (request, response) => {
     try {
       let email = request.body.email;
@@ -58,5 +61,22 @@ module.exports = {
       response.send(error);
       console.log(error);
     }
+  },
+
+  feedback: async (request, response) => {
+    let id = request.params.id;
+    let feedback = request.body.feedback;
+    userCopy.findOneAndUpdate(
+      { _id: id },
+      { feedback },
+      { new: true },
+      (error, data) => {
+        if (error) {
+          response.status(400).send(error);
+        } else {
+          response.send(data);
+        }
+      }
+    );
   },
 };

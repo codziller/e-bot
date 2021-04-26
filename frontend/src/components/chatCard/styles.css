@@ -1,0 +1,16 @@
+.card-image {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+.card-title {
+  font-weight: bolder;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: #fff;
+}
+.card-action {
+  text-align: center;
+  padding: 7px 24px;
+}

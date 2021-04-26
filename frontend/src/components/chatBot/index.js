@@ -34,6 +34,7 @@ class Chatbot extends Component {
       score: 0,
       displayResult: false,
       displayTable: false,
+      logoutReady: false,
     };
 
     if (cookies.get("users_id") === undefined) {
@@ -63,6 +64,7 @@ class Chatbot extends Component {
         },
       },
     };
+
     await this.callClient(request);
   };
 
@@ -115,7 +117,8 @@ class Chatbot extends Component {
       this.setState({ quizStarted: true });
     }, 1500);
   };
-  // Function to initiate course enrollment
+
+  // Function to randomize FAQs and query dialog flow with random questions
   ask = async () => {
     let question = faqs[Math.floor(Math.random() * faqs.length)];
     let says = {
@@ -142,6 +145,7 @@ class Chatbot extends Component {
       await this.callClient(request);
     }, 2000);
   };
+
   // Function to register users
   registerUser = async () => {
     const payload = {
@@ -158,7 +162,7 @@ class Chatbot extends Component {
       if (res && res.data) {
         cookies.set("user_name", res.data.name);
         cookies.set("user_email", res.data.email);
-
+        cookies.set("user_id", res.data._id);
         if (res.data.existing) {
           this.pushMessage(
             `Looks like you're already enroled with this email, ${res.data.name} `
@@ -184,6 +188,7 @@ class Chatbot extends Component {
 
     await this.callClient(request);
   };
+
   // Fuction to query dialogflow with all user and bot inputs
   callClient = async (request) => {
     try {
@@ -213,7 +218,7 @@ class Chatbot extends Component {
       );
 
       let says = {};
-
+      // To loop through dialogflow response
       if (res.data.queryResult.fulfillmentMessages) {
         for (let msg of res.data.queryResult.fulfillmentMessages) {
           says = {
@@ -224,6 +229,7 @@ class Chatbot extends Component {
 
           this.setState({ messages: [...this.state.messages, says] });
 
+          // Check if quiz should start
           if (newMsg) {
             if (newMsg.includes("course quiz")) {
               setTimeout(() => {
@@ -273,14 +279,6 @@ class Chatbot extends Component {
     }
   };
 
-  resolveAfterXSeconds = (x) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(x);
-      }, x * 1000);
-    });
-  };
-
   async componentDidMount() {
     //   Send welcome query
     this.sendEventQuery("Welcome");
@@ -289,11 +287,14 @@ class Chatbot extends Component {
     try {
       let response = await axios.post(
         "https://university-bot-app.herokuapp.com/auth/login",
-        { email: cookies.get("user_email") || "" }
+        {
+          email: cookies.get("user_email") || "",
+        }
       );
       if (response && response.data && response.data.name) {
         cookies.set("user_name", response.data.name);
         cookies.set("user_email", response.data.email);
+        cookies.set("user_id", response.data._id);
       }
     } catch (err) {
       console.log(err);
@@ -307,6 +308,7 @@ class Chatbot extends Component {
 
   componentDidUpdate() {
     let { name, email, userSaved, notOnload, displayResult } = this.state;
+
     // Scroll to bottom when new text get pushed to the chatbot
     this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     if (this.talkInput) {
@@ -324,11 +326,7 @@ class Chatbot extends Component {
       }, 5);
     }
   }
-  // To display chatbot
-  display(event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
+
   //   To compute quiz score
   computeScore(state) {
     let correctAnswers = [];
@@ -351,12 +349,6 @@ class Chatbot extends Component {
   }
   //   To
 
-  hide = (event) => {
-    event.preventDefault();
-
-    this.setState({ displayBot: true });
-  };
-
   handleQuickReplyPayload = (event, payload, text) => {
     event.preventDefault();
 
@@ -372,6 +364,7 @@ class Chatbot extends Component {
         break;
     }
   };
+
   // Collect selected answers from quiz
   setSelectedOption = (val) => {
     let field = [...this.state.selectedOptions];
@@ -400,6 +393,41 @@ class Chatbot extends Component {
     });
   };
 
+  // To log user out
+
+  logout = () => {
+    cookies.remove("user_id");
+    cookies.remove("user_name");
+    cookies.remove("user_email");
+    alert("Logged out successfully");
+    this.setState({ displayBot: false });
+    window.location.reload();
+  };
+
+  // To prompt user for a feedback
+  feedbackPrompt = () => {
+    this.setState({ logoutReady: true });
+    this.pushMessage(
+      "Before you logout, kindly drop a feedback for me, thank you."
+    );
+  };
+  // To collect and send feedback to backend
+  sendFeedback = async () => {
+    try {
+      let response = await axios.put(
+        `https://university-bot-app.herokuapp.com/feedback/${cookies.get(
+          "user_id"
+        )}`,
+        { feedback: this.state.text }
+      );
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      this.logout();
+    }
+  };
+
   //   To display get started cards
   renderCards = (cards) => {
     return cards.map((card, i) => (
@@ -410,6 +438,7 @@ class Chatbot extends Component {
       />
     ));
   };
+
   // To display messages
   renderOneMessage = (message, i) => {
     if (message.msg && message.msg.text && message.msg.text.text) {
@@ -537,9 +566,14 @@ class Chatbot extends Component {
     }
   }
 
-  handleTextSubmit = (e) => {
+  handleTextSubmit = async (e) => {
     e.preventDefault();
-    this.sendTextQuery(this.state.text);
+
+    if (this.state.logoutReady) {
+      await this.sendFeedback();
+    } else {
+      this.sendTextQuery(this.state.text);
+    }
     this.setState({ text: "" });
   };
 
@@ -593,27 +627,36 @@ class Chatbot extends Component {
             }}
             className="app_back"
           >
-            <div className="nav-wrapper">
+            <div className="nav-wrapper row a_center j_between">
               <a
                 href="/#"
                 className="brand-logo white"
                 style={{ fontSize: "24px" }}
               >
-                ChatBot
+                University bot
               </a>
-              <ul id="nav-mobile" className="right hide-on-med-and-down">
-                <li>
-                  <a
-                    className="white"
-                    href="/#"
-                    onClick={() =>
-                      this.setState({ displayBot: !this.state.displayBot })
-                    }
+
+              <div>
+                <span
+                  className="white pointer mr_1"
+                  href="/#"
+                  onClick={() =>
+                    this.setState({ displayBot: !this.state.displayBot })
+                  }
+                >
+                  Hide
+                </span>
+                {cookies.get("user_email") && (
+                  <span
+                    className="pointer danger"
+                    onClick={() => {
+                      this.feedbackPrompt();
+                    }}
                   >
-                    Close
-                  </a>
-                </li>
-              </ul>
+                    Logout
+                  </span>
+                )}
+              </div>
             </div>
           </nav>
           <div
@@ -849,28 +892,37 @@ class Chatbot extends Component {
             style={{ padding: "0 20px", height: "50px" }}
             className="app_back"
           >
-            <div className="nav-wrapper">
+            <div className="nav-wrapper row a_center j_between">
               <a
-                href="/"
-                className="brand-logo"
-                style={{ fontSize: "24px", lineHeight: "50px" }}
+                href="/#"
+                className="brand-logo white"
+                style={{ fontSize: "24px" }}
               >
-                ChatBot
+                University bot
               </a>
-              <ul id="nav-mobile" className="right hide-on-med-and-down">
-                <li>
-                  <a
-                    className="white"
-                    style={{ lineHeight: "50px" }}
-                    href="#/"
-                    onClick={() =>
-                      this.setState({ displayBot: !this.state.displayBot })
-                    }
+
+              <div>
+                <span
+                  className="white pointer mr_1"
+                  href="/#"
+                  onClick={() =>
+                    this.setState({ displayBot: !this.state.displayBot })
+                  }
+                >
+                  Display
+                </span>
+
+                {cookies.get("user_email") && (
+                  <span
+                    className="pointer danger"
+                    onClick={() => {
+                      this.feedbackPrompt();
+                    }}
                   >
-                    Display
-                  </a>
-                </li>
-              </ul>
+                    Logout
+                  </span>
+                )}
+              </div>
             </div>
           </nav>
           <div
