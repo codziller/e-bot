@@ -1,0 +1,46 @@
+
+
+.bot-head{
+    width: 600px;
+    position: fixed;
+    bottom: 70vh;
+    right: 0;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 20px;
+}
+.bot-body{
+    min-height: fit-content;
+    max-height: 70vh;
+    height: 100%;
+    width: 600px;
+    position: fixed;
+    bottom: 2px;
+    right: 0;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    border: 1px solid #9e9e9e;
+    background: #fff;
+}
+#chatbot{
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+.bot-closed{
+    min-height: 40px;
+    max-height: 500px;
+    width: 600px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+@media screen and (max-width: 600px) {
+.bot-head,.bot-closed,.bot-body{
+    width: 100%;
+}
+}

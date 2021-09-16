@@ -8,6 +8,7 @@ import Card from "../chatCard";
 import QuickReplies from "../quickReplies";
 import { faqs, quizQuestions } from "../../helpers/data";
 import Timetable from "../timetable";
+import "./styles.css";
 const cookies = new Cookies();
 
 class Chatbot extends Component {
@@ -46,7 +47,7 @@ class Chatbot extends Component {
   // The parameter noPush determines weather the user message should be displayed on the screen or not
   sendTextQuery = async (text, noPush) => {
     let says = {
-      speaks: "user",
+      speaks: "you",
       msg: {
         text: {
           text: text,
@@ -122,7 +123,7 @@ class Chatbot extends Component {
   ask = async () => {
     let question = faqs[Math.floor(Math.random() * faqs.length)];
     let says = {
-      speaks: "user",
+      speaks: "you",
       msg: {
         text: {
           text: question,
@@ -265,8 +266,7 @@ class Chatbot extends Component {
           speaks: "bot",
           msg: {
             text: {
-              text:
-                "I'm having inconveniences. I have to be end. will be back afterward",
+              text: "Aww, you might want to check you internet!",
             },
           },
         };
@@ -274,7 +274,7 @@ class Chatbot extends Component {
         let that = this;
         setTimeout(function () {
           that.setState({ displayBot: false });
-        }, 2000);
+        }, 10000);
       }
     }
   };
@@ -584,6 +584,8 @@ class Chatbot extends Component {
       padding: "1px 10px",
       borderRadius: "10px",
       lineHeight: "32px",
+      whiteSpace: "nowrap",
+      marginRight: "10px",
     };
 
     let optionStyle = {
@@ -611,29 +613,19 @@ class Chatbot extends Component {
       padding: "7px 20px",
       borderBottom: "3px solid #f8f8f8",
       borderTop: "3px solid #f8f8f8",
+      overflowX: "scroll",
     };
     if (this.state.displayBot) {
       return (
         <>
-          <nav
-            style={{
-              width: 600,
-              position: "fixed",
-              bottom: "70vh",
-              right: 0,
-              height: "50px",
-              lineHeight: "50px",
-              padding: "0 20px",
-            }}
-            className="app_back"
-          >
+          <nav style={{}} className="app_back bot-head">
             <div className="nav-wrapper row a_center j_between">
               <a
                 href="/#"
                 className="brand-logo white"
                 style={{ fontSize: "24px" }}
               >
-                University bot
+                Bot-E
               </a>
 
               <div>
@@ -659,32 +651,8 @@ class Chatbot extends Component {
               </div>
             </div>
           </nav>
-          <div
-            style={{
-              minHeight: "fit-content",
-              maxHeight: "70vh",
-              height: "100%",
-              width: 600,
-              position: "fixed",
-              bottom: 2,
-              right: 0,
-              overflowY: "scroll",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              border: "1px solid #9e9e9e",
-              background: "#fff",
-            }}
-          >
-            <div
-              id="chatbot"
-              style={{
-                height: "100%",
-                width: "100%",
-                overflow: "auto",
-              }}
-            >
+          <div className="bot-body">
+            <div id="chatbot">
               {this.renderMessages(this.state.messages)}
 
               {cookies.get("user_name") &&
@@ -858,9 +826,9 @@ class Chatbot extends Component {
                 disabled={this.state.quizStarted}
                 style={{
                   margin: 0,
-                  paddingLeft: "1%",
-                  paddingRight: "1%",
-                  width: "98%",
+                  paddingLeft: "7px",
+                  paddingRight: "7px",
+                  width: "100%",
                   height: "2.5rem",
                 }}
                 ref={(input) => {
@@ -878,16 +846,7 @@ class Chatbot extends Component {
       );
     } else {
       return (
-        <div
-          style={{
-            minHeight: 40,
-            maxHeight: 500,
-            width: 600,
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-          }}
-        >
+        <div className="bot-closed">
           <nav
             style={{ padding: "0 20px", height: "50px" }}
             className="app_back"
@@ -898,7 +857,7 @@ class Chatbot extends Component {
                 className="brand-logo white"
                 style={{ fontSize: "24px" }}
               >
-                University bot
+                Bot-E
               </a>
 
               <div>

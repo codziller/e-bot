@@ -11,7 +11,7 @@ const Header = () => (
         to={"/"}
         className="white bold"
       >
-        University Bot
+        Bot-E
       </Link>
     </div>
   </nav>

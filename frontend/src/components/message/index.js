@@ -23,7 +23,7 @@ const Message = ({ speaks, text }) => {
           <div className="col s10">
             <span className="black-text">{text}</span>
           </div>
-          {speaks === "user" && (
+          {speaks === "you" && (
             <div className="col s2 ml_1">
               <div
                 className="btn-floating btn-large waves-effect waves-light red"
