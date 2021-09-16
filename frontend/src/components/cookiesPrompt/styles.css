@@ -9,6 +9,7 @@
   padding: 7px;
   border-radius: 15px;
   border: none;
+  white-space: nowrap;
 }
 .cookies_propmpt button:focus,
 .cookies_propmpt button:active {
