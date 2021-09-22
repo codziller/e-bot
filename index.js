@@ -23,6 +23,7 @@ require("./routes/authRoutes")(app);
 const cors = require("cors");
 
 //if (process.env.NODE_ENV === "production") {
+
 //js and css files
 app.use(express.static("frontend/build"));
 const path = require("path");
@@ -37,4 +38,6 @@ app.get("*", (req, res) => {
 //}
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});

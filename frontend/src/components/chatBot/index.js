@@ -156,7 +156,7 @@ class Chatbot extends Component {
 
     try {
       let res = await axios.post(
-        "https://university-bot-app.herokuapp.com/auth/register",
+        "http://localhost:5000/auth/register",
         payload
       );
 
@@ -194,9 +194,7 @@ class Chatbot extends Component {
   callClient = async (request) => {
     try {
       if (this.state.clientToken === false) {
-        const res = await axios.get(
-          "https://university-bot-app.herokuapp.com/auth/get-token"
-        );
+        const res = await axios.get("http://localhost:5000/auth/get-token");
         this.setState({ clientToken: res.data.token });
       }
 
@@ -285,12 +283,9 @@ class Chatbot extends Component {
     // To check if user is logged in and get user details onmount
 
     try {
-      let response = await axios.post(
-        "https://university-bot-app.herokuapp.com/auth/login",
-        {
-          email: cookies.get("user_email") || "",
-        }
-      );
+      let response = await axios.post("http://localhost:5000/auth/login", {
+        email: cookies.get("user_email") || "",
+      });
       if (response && response.data && response.data.name) {
         cookies.set("user_name", response.data.name);
         cookies.set("user_email", response.data.email);
@@ -415,9 +410,7 @@ class Chatbot extends Component {
   sendFeedback = async () => {
     try {
       let response = await axios.put(
-        `https://university-bot-app.herokuapp.com/feedback/${cookies.get(
-          "user_id"
-        )}`,
+        `http://localhost:5000/feedback/${cookies.get("user_id")}`,
         { feedback: this.state.text }
       );
       console.log(response);
@@ -830,6 +823,7 @@ class Chatbot extends Component {
                   paddingRight: "7px",
                   width: "100%",
                   height: "2.5rem",
+                  fontSize: "16px",
                 }}
                 ref={(input) => {
                   this.talkInput = input;

@@ -1,7 +1,7 @@
 {
   "name": "university-bot",
   "version": "1.0.0",
-  "description": "University bot app",
+  "description": "E-bot App",
   "main": "index.js",
   "engines": {
     "node": "12.17.0",
@@ -11,9 +11,10 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix frontend",
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\""
+    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix frontend\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false && npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "author": "rameezyatoo",
+  "author": "codziller",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

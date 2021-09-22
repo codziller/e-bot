@@ -38,7 +38,6 @@ module.exports = {
           email: email,
         });
         let res = await newUser.save();
-
         response.status(201).send(res);
       }
     } catch (error) {
@@ -55,7 +54,7 @@ module.exports = {
       if (res[0]) {
         response.send(res[0]);
       } else {
-        response.status(404).send("User does not exist");
+        response.status(404).send("User does not exist!");
       }
     } catch (error) {
       response.send(error);
